@@ -1,7 +1,7 @@
 import chess
 import chess.pgn
 import time
-import randomMover as player1
+import goodAI as player1
 import randomMover as player2
 
 game = chess.pgn.Game()
