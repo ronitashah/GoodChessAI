@@ -1,8 +1,13 @@
 import chess
 def halfhuerestic(board): #should run the huerestic from whites percpective and look primarly at white's things(like only white's material and stuff)
-    for i in range(0,64):
-        return 0
-    return 0
+    grid = [['' for i in range(8)] for j in range(8)]
+    for y in range(8):
+        for x in range(8):
+            piece = board.piece_at(chess.SQUARES[y + 8*x])
+            if (temp == None):
+                grid[x][y] = ' '
+            else:
+                grid[x][y] = piece.piece_type()
 
 def huerestic(board, side): #side is the side "you" are playing as in the huerestic. The half huerestic is run for both sides and the difference is the final output
     if (board.is_game_over()):
