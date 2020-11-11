@@ -4,7 +4,7 @@ def halfhuerestic(board): #should run the huerestic from whites percpective and 
     for y in range(8):
         for x in range(8):
             piece = board.piece_at(chess.SQUARES[y + 8*x])
-            if (temp == None):
+            if (piece == None):
                 grid[x][y] = ' '
             else:
                 grid[x][y] = piece.piece_type()
