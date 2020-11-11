@@ -1,5 +1,7 @@
 import chess
 def halfhuerestic(board): #should run the huerestic from whites percpective and look primarly at white's things(like only white's material and stuff)
+    for i in range(0,64):
+        return 0
     return 0
 
 def huerestic(board, side): #side is the side "you" are playing as in the huerestic. The half huerestic is run for both sides and the difference is the final output
