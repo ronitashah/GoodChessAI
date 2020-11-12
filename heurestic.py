@@ -3,22 +3,22 @@ def halfheurestic(board): #should run the heurestic from whites percpective and 
     heuristicscore = 0
     #grid setup to represent the board
     grid = [['' for i in range(8)] for j in range(8)]
-    for y in range(8):
-        for x in range(8):
+    for x in range(8):
+        for y in range(8):
             piece = board.piece_at(chess.SQUARES[y + 8*x])
             if (piece == None):
                 grid[x][y] = ' '
             else:
                 grid[x][y] = piece.symbol()
-
-    #checks if pawns are diagonal to each other
-    for y in range(8):
-        for x in range(8):
+    pawncol = [0 for i in range(8)]
+    for x in range(8):
+        for y in range(8):
             if (grid[x][y] == 'P'):
+                #checks if pawns are diagonal to each other
                 if (x - 1 >= 0):
                     if (y + 1 <= 7):
                         if(grid[x-1][y+1] == 'P'):
-                            heuristicscore += 1
+                            heuristicscore += 1 #how good pawns are to be diagonal
                     if (y - 1 >= 0):
                         if(grid[x-1][y-1] == 'P'):
                             heuristicscore += 1
@@ -29,6 +29,19 @@ def halfheurestic(board): #should run the heurestic from whites percpective and 
                     if (y - 1 >= 0):
                         if(grid[x+1][y-1] == 'P'):
                             heuristicscore += 1
+                #increments number of pawns in column x
+                pawncol[x] += 1
+    for col in range(8):
+        #checks if 2 pawns are in the same column
+        if pawncol[col] > 1:
+            heuristicscore -= 1 #how bad 2 pawns are in same column
+        #checks if there are any isolated columns
+        if (col - 1 >= 0 and col + 1 <= 7): 
+            if (pawncol[col + 1] == 0 and pawncol[col - 1] == 0):
+                heuristicscore -= 1 #how bad an isolated pawn is
+
+                
+                
     return heuristicscore
 
 def heurestic(board, side): #side is the side "you" are playing as in the heurestic. The half heurestic is run for both sides and the difference is the final output
