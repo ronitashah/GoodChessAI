@@ -1,6 +1,6 @@
 import chess
-from huerestic import huerestic
-from huerestic import overeval
+from heurestic import heurestic
+from heurestic import overeval
 def minimax(board, depth):
     return max(board, depth)[1]
 def min(board, depth): #does the min part of minimax, and return the eval
@@ -17,7 +17,7 @@ def min(board, depth): #does the min part of minimax, and return the eval
     return min
 def max(board, depth): #does the max part of minimax, and returns a (eval, action) tuple
     if (depth == 0):
-        return (huerestic(board, board.turn), None)
+        return (heurestic(board, board.turn), None)
     if (board.is_game_over()):
         return (overeval(board, board.turn), None)
     moves = list(board.legal_moves)
