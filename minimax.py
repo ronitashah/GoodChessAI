@@ -10,7 +10,7 @@ def minimax(board, depth):
     t = max(board, depth, -float("inf"), float("inf"), {})[1]
     if (t == None):
         print(board)
-    print(count)
+    #print(count)
     return t
 def min(board, depth, a, b, prevboards): #does the min part of minimax, and return the eval
     if (board.is_game_over()):
