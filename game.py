@@ -2,7 +2,7 @@ import chess
 import chess.pgn
 import time
 import goodAI as player1
-import randomMover as player2
+import goodAI as player2
 
 game = chess.pgn.Game()
 node = game
