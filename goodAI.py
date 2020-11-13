@@ -19,7 +19,7 @@ class Player:
                 self.gboard.push(board.peek())
             else:
                 self.gboard.push(funcs.invert(board.peek()))
-        move = minimax(self.gboard, 2)
+        move = minimax(self.gboard, 5)
         self.gboard.push(move)
         if (self.side == chess.WHITE):
             return move
