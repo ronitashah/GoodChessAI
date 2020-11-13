@@ -1,7 +1,8 @@
 import chess
-import funcs
+import funcs 
 import C
 class GBoard:
+    from heuristics import matheuristic, Pheuristic
     def __init__(self, side):
         self.grid = [0 for s in range(64)]
         self.Wpieces = [[] for x in range(7)]
@@ -19,9 +20,8 @@ class GBoard:
             if (P != None):
                 self.board.set_piece_at(s, P)
                 self.addpiece(s, funcs.piece(P))
-        self.board.turn = side
-    from heuristics import matheuristic, Pheuristic 
-    def addpiece(self, square, piece):
+        self.board.turn = side 
+    def addpiece(self, square, piece): #function to be called when changing a square from empty to having a piece. updates all of the fields and heurisitc to have the piece added, but the board has the piece already added
         pval = self.matheuristic(square)
         grid = self.grid
         grid[square] = piece
@@ -40,7 +40,7 @@ class GBoard:
                 funcs.insert(BPC[square % 8], square // 8)
                 pval += self.Pheuristic(square)
         self.heuristic += pval
-    def rmpiece(self, square, piece):
+    def rmpiece(self, square, piece): #function to be called when changing a square from housing the piece "piece" into empty. updates all of the field and heuristicto have the piece removed, but the board already has the piece removed
         pval = self.matheuristic(square)
         grid = self.grid
         grid[square] = 0
@@ -59,7 +59,7 @@ class GBoard:
                 pval += self.Pheuristic(square)
                 BPC[square % 8].remove(square // 8)
         self.heuristic -= pval
-    def push(self, move):
+    def push(self, move): #makes the move and calls addpiece and rmpiece appriopriately to make the changes to all of the fields(other than obard which is updated seperately)
         grid = self.grid
         board = self.board
         board.turn = not board.turn
@@ -116,7 +116,7 @@ class GBoard:
                 board.set_piece_at(toS, P1)
                 self.addpiece(toS, piece)
             self.movestack.append((move, None, False))
-    def pop(self):
+    def pop(self): #undoes the prev move and calls addpiece and rmpiece appriopriately to make the changes to all of the fields(other than obard which is updated seperately)
         grid = self.grid
         board = self.board
         board.turn = not board.turn
