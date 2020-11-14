@@ -1,14 +1,17 @@
 import chess
-from heuristic import heuristic
-from heuristic import overeval
 
+count = 0
 def minimax(gboard, depth):
+    global count
+    count = 0
     t = max(gboard, depth, -float("inf"), float("inf"))[1]
+    #print(count)
     return t
 def min(gboard, depth, a, b): #does the min part of minimax, and return the eval
     depth -= 1
     board = gboard.board
     moves = list(board.legal_moves)
+    t = 0
     if (len(moves) == 0):
         if (board.is_check()):
             return 1000000
@@ -18,6 +21,8 @@ def min(gboard, depth, a, b): #does the min part of minimax, and return the eval
     for move in moves:
         gboard.push(move)
         if (depth == 0):
+            global count
+            count += 1
             t = gboard.heuristic
         else:
             t = max(gboard, depth, a, b)[0]
@@ -25,6 +30,7 @@ def min(gboard, depth, a, b): #does the min part of minimax, and return the eval
         if (min > t):
             min = t
             if (b > min):
+                
                 b = min
                 if (b <= a):
                     break
@@ -41,9 +47,12 @@ def max(gboard, depth, a, b): #does the max part of minimax, and returns a (eval
             return (0, None)
     max = -float("inf")
     maxa = None
+    t = 0
     for move in moves:
         gboard.push(move)
         if (depth == 0):
+            global count
+            count += 1
             t = gboard.heuristic
         else:
             t = min(gboard, depth, a, b)

@@ -3,7 +3,6 @@ import chess.pgn
 import time
 import goodAI as player1
 import randomMover as player2
-
 game = chess.pgn.Game()
 node = game
 board = chess.Board()

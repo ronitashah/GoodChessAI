@@ -6,4 +6,5 @@ class Player:
         pass
     
     def move(self, board, time):
+        #random.seed(0)
         return random.choice(list(board.legal_moves))

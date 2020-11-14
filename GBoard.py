@@ -9,6 +9,8 @@ class GBoard:
         self.Bpieces = [[] for x in range(7)]
         self.Wpieces[1] = [[] for x in range(8)]
         self.Bpieces[1] = [[] for x in range(8)]
+        """self.Wattack = [[] for s in range(64)]
+        self.Battack = [[] for s in range(64)]"""
         self.heuristic = 0
         self.movestack = []
         self.board = chess.Board()
@@ -22,26 +24,42 @@ class GBoard:
                 self.addpiece(s, funcs.piece(P))
         self.board.turn = side 
     def addpiece(self, square, piece): #function to be called when changing a square from empty to having a piece. updates all of the fields and heurisitc to have the piece added, but the board has the piece already added
-        pval = self.matheuristic(square)
         grid = self.grid
         grid[square] = piece
+        """attack1 = None
+        attack2 = None
+        ptype = 0"""
         if (piece > 0):
+            """attack1 = self.Wattack
+            attack2 = self.Battack
+            ptype = piece"""
             if (piece > 1):
                 self.Wpieces[piece].append(square)
             else:
                 WPC = self.Wpieces[1]
                 funcs.insert(WPC[square % 8], square // 8)
-                pval += self.Pheuristic(square)
         else:
+            """attack1 = self.Battack
+            attack2 = self.Wattack
+            ptype = -piece"""
             if (piece < -1):
                 self.Bpieces[-piece].append(square)
             else:
                 BPC = self.Bpieces[1]
                 funcs.insert(BPC[square % 8], square // 8)
-                pval += self.Pheuristic(square)
+        """board = self.board
+        for s in board.attacks(square):
+            funcs.insert(attack1[s], ptype)
+        for p in attack2[square]:
+            if (p == 3 or )"""
+        pval = self.matheuristic(square)
+        if (piece == 1 or piece == -1):
+            pval += self.Pheuristic(square)
         self.heuristic += pval
     def rmpiece(self, square, piece): #function to be called when changing a square from housing the piece "piece" into empty. updates all of the field and heuristicto have the piece removed, but the board already has the piece removed
         pval = self.matheuristic(square)
+        if (piece == 1 or piece == -1):
+            pval += self.Pheuristic(square)
         grid = self.grid
         grid[square] = 0
         if (piece > 0):
@@ -49,14 +67,12 @@ class GBoard:
                 self.Wpieces[piece].remove(square)
             else:
                 WPC = self.Wpieces[1]
-                pval += self.Pheuristic(square)
                 WPC[square % 8].remove(square // 8)
         else:
             if (piece < -1):
                 self.Bpieces[-piece].remove(square)
             else:
                 BPC = self.Bpieces[1]
-                pval += self.Pheuristic(square)
                 BPC[square % 8].remove(square // 8)
         self.heuristic -= pval
     def push(self, move): #makes the move and calls addpiece and rmpiece appriopriately to make the changes to all of the fields(other than obard which is updated seperately)
