@@ -1,8 +1,7 @@
 from minimax import minimax
 from GBoard import GBoard
-import funcs
+import F
 import chess
-import C
 class Player:
     def __init__(self, board, side, time):
         self.gboard = GBoard(side)
@@ -18,9 +17,9 @@ class Player:
             if (self.side == chess.WHITE):
                 self.gboard.push(board.peek())
             else:
-                self.gboard.push(funcs.invert(board.peek()))
+                self.gboard.push(F.invert(board.peek()))
         move = minimax(self.gboard, 4)
         self.gboard.push(move)
         if (self.side == chess.WHITE):
             return move
-        return funcs.invert(move)
+        return F.invert(move)

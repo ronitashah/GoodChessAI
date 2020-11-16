@@ -14,7 +14,7 @@ def min(gboard, depth, a, b): #does the min part of minimax, and return the eval
     t = 0
     if (len(moves) == 0):
         if (board.is_check()):
-            return 1000000
+            return 1000000 + depth
         else:
             return 0
     min = float("inf")
@@ -30,7 +30,6 @@ def min(gboard, depth, a, b): #does the min part of minimax, and return the eval
         if (min > t):
             min = t
             if (b > min):
-                
                 b = min
                 if (b <= a):
                     break
@@ -42,7 +41,7 @@ def max(gboard, depth, a, b): #does the max part of minimax, and returns a (eval
     moves = list(board.legal_moves)
     if (len(moves) == 0):
         if (board.is_check()):
-            return (-1000000, None)
+            return (-1000000 - depth, None)
         else:
             return (0, None)
     max = -float("inf")

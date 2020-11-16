@@ -9,6 +9,16 @@ def piece(P): #returns the piece number value of the piece object
     return -P.piece_type
 def insert(l, v): #inserts v into the appropriate spot of the sorted list
     x = 0
-    while x < len(l) and v > l[x]:
+    while x < len(l) and v >= l[x]:
+        x += 1
+    l.insert(x, v)
+def insert2(l, v): #inserts v into the appropriate spot of the sorted list
+    x = 0
+    while x < len(l) and v[0] >= l[x][0]:
+        x += 1
+    l.insert(x, v)
+def insert3(l, v, k): #inserts v into the appropriate spot based on k of the sorted list
+    x = 0
+    while x < len(l) and k >= l[x][0]:
         x += 1
     l.insert(x, v)
