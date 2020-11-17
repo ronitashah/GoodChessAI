@@ -1,8 +1,9 @@
 import chess
 import chess.pgn
 import time
+import minimax
+import goodAI as player2
 import goodAI as player1
-import human as player2
 game = chess.pgn.Game()
 node = game
 board = chess.Board()
@@ -29,17 +30,19 @@ while p1_time>0 and p2_time>0 and not board.is_game_over() and legal_move:
         start = time.time()
         move = p1.move(board_copy,p1_time)
         end = time.time()
+        #p1_time -= end-start
     else:
         start = time.time()
         move = p2.move(board_copy,p2_time)
         end = time.time()
+        #p2_time -= end-start
     
     if move in board.legal_moves:
         board.push(move)
         node = node.add_variation(move)
     else:
         legal_move = False
-
+print(minimax.count)
 if not legal_move:
     if board.turn == chess.WHITE:
         print("Black wins - illegal move by white")

@@ -1,12 +1,91 @@
 import chess
-
+import F
 count = 0
 def minimax(gboard, depth):
     global count
-    count = 0
-    t = max(gboard, depth, -float("inf"), float("inf"))[1]
-    #print(count)
+    t = negascout2(gboard, depth, 1)[0][1]
     return t
+def negascout1(gboard, depth, a, b, color):
+    v = 0
+    if (depth == 1):
+        moves = list(gboard.board.legal_moves)
+        if (len(moves) == 0):
+            if (gboard.board.is_check()):
+                return -color * (1000000 + depth)
+            else:
+                return 0
+        for move in moves:
+            gboard.push(move)
+            global count
+            count += 1
+            v = color * gboard.heuristic
+            gboard.pop()
+            if (a < v):
+                a = v
+                if (a >= b):
+                    break
+        return a
+    moves = negascout2(gboard, depth // 2, color)
+    if (len(moves) == 0):
+        if (gboard.board.is_check()):
+            return -color * (1000000 + depth)
+        else:
+            return 0
+    if (depth == 2):
+        for (_, move) in moves:
+            gboard.push(move)
+            v = -negascout1(gboard, 1, -b, -a, -color)
+            gboard.pop()
+            if (a < v):
+                a = v
+                if (a >= b):
+                    break
+        return a
+    for x in range(len(moves)):
+        move = moves[x][1]
+        gboard.push(move)
+        if (x == 0):
+            v = -negascout1(gboard, depth - 1, -b, -a, -color)
+        else:
+            v = -negascout1(gboard, depth - 1, -a - 0.01, -a, -color)
+            if (a < v and v < b):
+                v = -negascout1(gboard, depth - 1, -b, -v, -color)
+        gboard.pop()
+        if (a < v):
+            a = v
+            if (a >= b):
+                break
+    return a
+def negascout2(gboard, depth, color):
+    ans = []
+    if (depth == 1):
+        moves = list(gboard.board.legal_moves)
+        for move in moves:
+            gboard.push(move)
+            global count
+            count += 1
+            v = color * gboard.heuristic
+            gboard.pop()
+            F.insert2(ans, (-v, move))
+        return ans
+    moves = negascout2(gboard, depth // 2, color)
+    a = -float("inf")
+    b = float("inf")
+    v = 0
+    for x in range(len(moves)):
+        move = moves[x][1]
+        gboard.push(move)
+        if (x == 0):
+            v = -negascout1(gboard, depth - 1, -b, -a, -color)
+        else:
+            v = -negascout1(gboard, depth - 1, -a - 0.01, -a, -color)
+            if (a < v):
+                v = -negascout1(gboard, depth - 1, -b, -v, -color)
+        gboard.pop()
+        F.insert2(ans, (-v, move))
+        if (a < v):
+            a = v
+    return ans
 def min(gboard, depth, a, b): #does the min part of minimax, and return the eval
     depth -= 1
     board = gboard.board
