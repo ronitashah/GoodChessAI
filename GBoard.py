@@ -1,8 +1,8 @@
 import chess
-import F 
-import C
+from .F import *
+from .C import *
 class GBoard:
-    from heuristics import matheuristic, Pheuristic
+    from .heuristics import matheuristic, Pheuristic
     def __init__(self, side):
         self.grid = [0 for s in range(64)]
         self.Wpieces = [[] for x in range(7)]
@@ -22,7 +22,7 @@ class GBoard:
             P = t.piece_at(s)
             if (P != None):
                 self.board.set_piece_at(s, P)
-                self.addpiece(s, F.piece(P), False)
+                self.addpiece(s, pieceof(P), False)
         self.board.turn = side 
     def addpiece(self, square, piece, h): #function to be called when changing a square from empty to having a piece. updates all of the fields and heurisitc to have the piece added, but the board has the piece already added
         grid = self.grid
@@ -37,7 +37,7 @@ class GBoard:
                 self.Wpieces[piece].append(square)
             else:
                 WPC = self.Wpieces[1]
-                F.insert(WPC[square % 8], square // 8)
+                insert(WPC[square % 8], square // 8)
         else:
             attack1 = self.Battack
             attack2 = self.Wattack
@@ -46,19 +46,19 @@ class GBoard:
                 self.Bpieces[-piece].append(square)
             else:
                 BPC = self.Bpieces[1]
-                F.insert(BPC[square % 8], square // 8)
+                insert(BPC[square % 8], square // 8)
         ptype = color * piece
         #updates the attacks arrays
         x = square % 8
         y = square // 8
         for s in self.board.attacks(square):
-            F.insert2(attack1[s], (ptype, square))
+            insert2(attack1[s], (ptype, square))
             p = grid[s]
             if (p != 0):
                 ap = abs(p)
                 if (ptype > ap):
                     for sq in sync(grid, x, y, piece, s % 8, s // 8, s, p):
-                        F.insert2(attack1[sq], (ptype, square))
+                        insert2(attack1[sq], (ptype, square))
                 else:
                     for sq in sync(grid, x, y, piece, s % 8, s // 8, s, p):
                         attack1[sq].insert(attack1[sq].index((ap, s)) + 1, (ptype, square))
@@ -68,7 +68,7 @@ class GBoard:
                 attack1[sq].remove((ap, s))
             if (ap > ptype):
                 for sq in sync(grid, s % 8, s // 8, p, x, y, square, piece):
-                    F.insert2(attack1[sq], (ap, s))
+                    insert2(attack1[sq], (ap, s))
             else:
                 for sq in sync(grid, s % 8, s // 8, p, x, y, square, piece):
                     attack1[sq].insert(attack1[sq].index((ptype, square)) + 1, (ap, s))
@@ -130,7 +130,7 @@ class GBoard:
                 max = ap
             tmax = max
             for sq in blocks(grid, s % 8, s // 8, p, x, y, square):
-                F.insert3(attack1[sq], (ap, s), tmax)
+                insert3(attack1[sq], (ap, s), tmax)
                 pi = abs(grid[sq])
                 if (tmax < pi):
                     tmax = pi
@@ -141,7 +141,7 @@ class GBoard:
                 max = ap
             tmax = max
             for sq in blocks(grid, s % 8, s // 8, p, x, y, square):
-                F.insert3(attack2[sq], (ap, s), tmax)
+                insert3(attack2[sq], (ap, s), tmax)
                 pi = abs(grid[sq])
                 if (tmax < pi):
                     tmax = pi
@@ -177,7 +177,7 @@ class GBoard:
             if (move.promotion != None):
                 P3 = chess.Piece(move.promotion, P1.color)
                 board.set_piece_at(toS, P3)
-                self.addpiece(toS, F.piece(P3), True)
+                self.addpiece(toS, pieceof(P3), True)
             else:
                 board.set_piece_at(toS, P1)
                 self.addpiece(toS, piece, True)
@@ -197,7 +197,7 @@ class GBoard:
             if (move.promotion != None):
                 P3 = chess.Piece(move.promotion, P1.color)
                 board.set_piece_at(toS, P3)
-                self.addpiece(toS, F.piece(P3), True)
+                self.addpiece(toS, pieceof(P3), True)
             else:
                 board.set_piece_at(toS, P1)
                 self.addpiece(toS, piece, True)
@@ -238,7 +238,7 @@ class GBoard:
             board.set_piece_at(fromS, P1)
             self.addpiece(fromS, piece, False)
             board.set_piece_at(capS, P2)
-            self.addpiece(capS, F.piece(P2), False)
+            self.addpiece(capS, pieceof(P2), False)
         else:
             if (move.promotion != None):
                 board.set_piece_at(fromS, chess.Piece(1, P1.color))
@@ -251,7 +251,7 @@ class GBoard:
                 self.addpiece(fromS, piece, False)
             if (P2 != None):
                 board.set_piece_at(toS, P2)
-                self.addpiece(toS, F.piece(P2), False)
+                self.addpiece(toS, pieceof(P2), False)
         hstack = self.heuristicstack
         hstack.pop()
         self.heuristic = hstack[len(hstack) - 1]

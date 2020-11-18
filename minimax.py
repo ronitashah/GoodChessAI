@@ -1,5 +1,5 @@
 import chess
-import F
+from .F import *
 count = 0
 def minimax(gboard, depth):
     global count
@@ -66,7 +66,7 @@ def negascout2(gboard, depth, color):
             count += 1
             v = color * gboard.heuristic
             gboard.pop()
-            F.insert2(ans, (-v, move))
+            insert2(ans, (-v, move))
         return ans
     moves = negascout2(gboard, depth // 2, color)
     a = -float("inf")
@@ -82,7 +82,7 @@ def negascout2(gboard, depth, color):
             if (a < v):
                 v = -negascout1(gboard, depth - 1, -b, -v, -color)
         gboard.pop()
-        F.insert2(ans, (-v, move))
+        insert2(ans, (-v, move))
         if (a < v):
             a = v
     return ans
