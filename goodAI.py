@@ -18,9 +18,13 @@ class Player:
                 self.gboard.push(board.peek())
             else:
                 self.gboard.push(invert(board.peek()))
-        if (time < 5):
+        move = None
+        if (time > 5):
+            move = minimax(self.gboard, 4)
+        elif (time > 0.5):
             move = minimax(self.gboard, 3)
-        move = minimax(self.gboard, 4)
+        else:
+            move = minimax(self.gboard, 2)
         self.gboard.push(move)
         if (self.side == chess.WHITE):
             return move

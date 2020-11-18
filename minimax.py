@@ -11,7 +11,7 @@ def negascout1(gboard, depth, a, b, color):
         moves = list(gboard.board.legal_moves)
         if (len(moves) == 0):
             if (gboard.board.is_check()):
-                return -color * (1000000 + depth)
+                return -1000000 - depth
             else:
                 return 0
         for move in moves:
@@ -28,7 +28,7 @@ def negascout1(gboard, depth, a, b, color):
     moves = negascout2(gboard, depth // 2, color)
     if (len(moves) == 0):
         if (gboard.board.is_check()):
-            return -color * (1000000 + depth)
+            return -1000000 - depth
         else:
             return 0
     if (depth == 2):
