@@ -6,53 +6,24 @@ def matheuristic(self, square):
     if (piece > 0): #if piece is white
         return mateval[piece] + poseval[piece][square]
     return -mateval[-piece] - poseval[-piece][(7 - square // 8) * 8 + square % 8]
+def controlheuristic(self, control, square):
+    piece = self.grid[square]
+    if (piece == 0):
+        if (control > 0):
+            return control * controlgrid[square]
+        else:
+            return control * controlgrid[(7 - square // 8) * 8 + square % 8]
+    elif (piece > 0):
+        if (control > 0):
+            return control * controlgrid[square] * protectedcoef * mateval[piece] ** protectedpow #we control a square with our piece
+        else:
+            return enemycontrol * control * controlgrid[square] * protectedcoef * mateval[piece] ** protectedpow #opponent controls a square with our piece
+    else:
+        if (control > 0):
+            return enemycontrol * control * controlgrid[(7 - square // 8) * 8 + square % 8] * protectedcoef * mateval[-piece] ** protectedpow #we control a square with the opponents piece
+        else:
+            return control * controlgrid[(7 - square // 8) * 8 + square % 8] * protectedcoef * mateval[-piece] ** protectedpow #opponent controls a square with the opponent's piece
 
-def isolated(pawncol, col):
-    ans = 0
-    if (col > 0 and len(pawncol[col - 1]) > 0):
-        ans += 1
-    if (col < 7 and len(pawncol[col + 1]) > 0):
-        ans += 1
-    return ans
-
-def passed(pawncol, col, y, color):
-    ans = 0
-    if (color == 1):
-        if (len(pawncol[col]) > 0 and y < pawncol[col][len(pawncol[col]) - 1]):
-            ans += 1
-        if (col > 0 and ((len(pawncol[col - 1]) > 0 and y < pawncol[col - 1][len(pawncol[col])-1]))):
-            ans += 1
-        if (col < 7 and ((len(pawncol[col + 1]) > 0 and y < pawncol[col + 1][len(pawncol[col])-1]))):
-            ans += 1
-        return ans
-    if (len(pawncol[col]) > 0 and y > pawncol[col][0]):
-        ans += 1
-    if (col > 0 and ((len(pawncol[col - 1]) > 0 and y > pawncol[col - 1][0]))):
-        ans += 1
-    if (col < 7 and ((len(pawncol[col + 1]) > 0 and y > pawncol[col + 1][0]))):
-        ans += 1
-    return ans
-
-def wpassed(pawncol, col, y):
-    ans = 0
-    if (len(pawncol[col]) > 0 and y < pawncol[col][len(pawncol[col]) - 1]):
-        ans += 1
-    if (col > 0 and ((len(pawncol[col - 1]) > 0 and y < pawncol[col - 1][len(pawncol[col - 1])-1]))):
-        ans += 1
-    if (col < 7 and ((len(pawncol[col + 1]) > 0 and y < pawncol[col + 1][len(pawncol[col + 1])-1]))):
-        ans += 1
-    return ans
-    
-def bpassed(pawncol, col, y):
-    ans = 0
-    if (len(pawncol[col]) > 0 and y > pawncol[col][0]):
-        ans += 1
-    if (col > 0 and ((len(pawncol[col - 1]) > 0 and y > pawncol[col - 1][0]))):
-        ans += 1
-    if (col < 7 and ((len(pawncol[col + 1]) > 0 and y > pawncol[col + 1][0]))):
-        ans += 1
-    return ans
-        
 def Pheuristic(self, square):
     heuristicscore = 0
     piece = self.grid[square]
@@ -109,3 +80,49 @@ def Pheuristic(self, square):
                         heuristicscore += passedP
         
     return heuristicscore * piece #negative if black
+def isolated(pawncol, col):
+    ans = 0
+    if (col > 0 and len(pawncol[col - 1]) > 0):
+        ans += 1
+    if (col < 7 and len(pawncol[col + 1]) > 0):
+        ans += 1
+    return ans
+
+def passed(pawncol, col, y, color):
+    ans = 0
+    if (color == 1):
+        if (len(pawncol[col]) > 0 and y < pawncol[col][len(pawncol[col]) - 1]):
+            ans += 1
+        if (col > 0 and ((len(pawncol[col - 1]) > 0 and y < pawncol[col - 1][len(pawncol[col])-1]))):
+            ans += 1
+        if (col < 7 and ((len(pawncol[col + 1]) > 0 and y < pawncol[col + 1][len(pawncol[col])-1]))):
+            ans += 1
+        return ans
+    if (len(pawncol[col]) > 0 and y > pawncol[col][0]):
+        ans += 1
+    if (col > 0 and ((len(pawncol[col - 1]) > 0 and y > pawncol[col - 1][0]))):
+        ans += 1
+    if (col < 7 and ((len(pawncol[col + 1]) > 0 and y > pawncol[col + 1][0]))):
+        ans += 1
+    return ans
+
+def wpassed(pawncol, col, y):
+    ans = 0
+    if (len(pawncol[col]) > 0 and y < pawncol[col][len(pawncol[col]) - 1]):
+        ans += 1
+    if (col > 0 and ((len(pawncol[col - 1]) > 0 and y < pawncol[col - 1][len(pawncol[col - 1])-1]))):
+        ans += 1
+    if (col < 7 and ((len(pawncol[col + 1]) > 0 and y < pawncol[col + 1][len(pawncol[col + 1])-1]))):
+        ans += 1
+    return ans
+    
+def bpassed(pawncol, col, y):
+    ans = 0
+    if (len(pawncol[col]) > 0 and y > pawncol[col][0]):
+        ans += 1
+    if (col > 0 and ((len(pawncol[col - 1]) > 0 and y > pawncol[col - 1][0]))):
+        ans += 1
+    if (col < 7 and ((len(pawncol[col + 1]) > 0 and y > pawncol[col + 1][0]))):
+        ans += 1
+    return ans
+        

@@ -2,7 +2,7 @@ import chess
 from .F import *
 from .C import *
 class GBoard:
-    from .heuristics import matheuristic, Pheuristic
+    from .heuristics import matheuristic, controlheuristic, Pheuristic
     def __init__(self, side):
         self.grid = [0 for s in range(64)]
         self.Wpieces = [[] for x in range(7)]
@@ -11,9 +11,13 @@ class GBoard:
         self.Bpieces[1] = [[] for x in range(8)]
         self.Wattack = [[] for s in range(64)]
         self.Battack = [[] for s in range(64)]
+        self.controlH = [0 for s in range(64)]
         self.heuristic = 0
         self.heuristicstack = [self.heuristic]
         self.movestack = []
+        self.Wflags = set()
+        self.Bflags = set()
+        self.changed = set()
         self.board = chess.Board()
         for s in range(64):
             self.board.remove_piece_at(s)
@@ -49,22 +53,28 @@ class GBoard:
                 insert(BPC[square % 8], square // 8)
         ptype = color * piece
         #updates the attacks arrays
+        changed = self.changed
+        changed.add(square)
         x = square % 8
         y = square // 8
         for s in self.board.attacks(square):
             insert2(attack1[s], (ptype, square))
+            changed.add(s)
             p = grid[s]
             if (p != 0):
                 ap = abs(p)
                 if (ptype > ap):
                     for sq in sync(grid, x, y, piece, s % 8, s // 8, s, p):
+                        changed.add(sq)
                         insert2(attack1[sq], (ptype, square))
                 else:
                     for sq in sync(grid, x, y, piece, s % 8, s // 8, s, p):
+                        changed.add(sq)
                         attack1[sq].insert(attack1[sq].index((ap, s)) + 1, (ptype, square))
         for (ap, s) in attack1[square]:
             p = ap * color
             for sq in blocks(grid, s % 8, s // 8, p, x, y, square):
+                changed.add(sq)
                 attack1[sq].remove((ap, s))
             if (ap > ptype):
                 for sq in sync(grid, s % 8, s // 8, p, x, y, square, piece):
@@ -75,6 +85,7 @@ class GBoard:
         for (ap, s) in attack2[square]:
             p = -ap * color
             for sq in blocks(grid, s % 8, s // 8, p, x, y, square):
+                changed.add(sq)
                 attack2[sq].remove((ap, s))
         grid[square] = piece
         if (h):
@@ -113,13 +124,17 @@ class GBoard:
                 BPC[square % 8].remove(square // 8)
         ptype = color * piece
         #updates the attacks arrays
+        changed = self.changed
+        changed.add(square)
         x = square % 8
         y = square // 8
         for s in self.board.attacks(square):
             attack1[s].remove((ptype, square))
+            changed.add(s)
             p = grid[s]
             if (p != 0):
                 for sq in sync(grid, x, y, piece, s % 8, s // 8, s, p):
+                    changed.add(sq)
                     attack1[sq].remove((ptype, square))
         max = 0
         for (ap, s) in attack1[square]:
@@ -130,6 +145,7 @@ class GBoard:
                 max = ap
             tmax = max
             for sq in blocks(grid, s % 8, s // 8, p, x, y, square):
+                changed.add(sq)
                 insert3(attack1[sq], (ap, s), tmax)
                 pi = abs(grid[sq])
                 if (tmax < pi):
@@ -141,6 +157,7 @@ class GBoard:
                 max = ap
             tmax = max
             for sq in blocks(grid, s % 8, s // 8, p, x, y, square):
+                changed.add(sq)
                 insert3(attack2[sq], (ap, s), tmax)
                 pi = abs(grid[sq])
                 if (tmax < pi):
@@ -202,6 +219,38 @@ class GBoard:
                 board.set_piece_at(toS, P1)
                 self.addpiece(toS, piece, True)
             self.movestack.append((move, None, False))
+        Wflags1 = self.Wflags
+        Bflags1 = self.Bflags
+        Wflags2 = set()
+        Bflags2 = set()
+        Wattack = self.Wattack
+        Battack = self.Battack
+        controlH = self.controlH
+        hdif = 0
+        for square in Wflags1:
+            p = grid[square]
+            if (p > 0 and flag(Wattack[square], Battack[square], p)):
+                Wflags2.add(square)
+        for square in Bflags1:
+            p = grid[square]
+            if (p < 0 and flag(Battack[square], Wattack[square], -p)):
+                Bflags2.add(square)
+        for square in self.changed:
+            Wa = Wattack[square]
+            Ba = Battack[square]
+            h = 0
+            #h = self.controlheuristic(control(Wa, Ba), square)
+            hdif += h - controlH[square]
+            controlH[square] = h
+            p = grid[square]
+            if (p > 0 and flag(Wa, Ba, p)):
+                Wflags2.add(square)
+            elif (p < 0 and flag(Ba, Wa, -p)):
+                Bflags2.add(square)
+        self.Wflags = Wflags2
+        self.Bflags = Bflags2
+        self.changed = set()
+        self.heuristic += hdif
         self.heuristicstack.append(self.heuristic)
     def pop(self): #undoes the prev move and calls addpiece and rmpiece appriopriately to make the changes to all of the fields(other than obard which is updated seperately)
         grid = self.grid
@@ -258,6 +307,34 @@ class GBoard:
         return move
     def peek(self):
         return self.movestack[-1]
+def control(defense, attack):
+    ans = 0
+    for (i, x) in enumerate(defense, start=1):
+        ans += mateval[x[0]] ** protectorpow * i ** iterationpow
+
+    for (i, x) in enumerate(attack, start=1):
+        ans -= mateval[x[0]] ** protectorpow * i ** iterationpow
+
+    return protectorcoef * ans
+def flag(defense, attack, ptype): #returns if the piece is hanging or not
+    if(len(attack) == 0):
+        return False
+    i = 0
+    totalyou = 0
+    totalopponent = mateval[ptype]
+    while (i < len(defense)):
+        totalyou += mateval[attack[i][0]]
+        if (totalopponent > totalyou):
+            return True
+        i += 1
+        if (i < len(attack)):
+            totalopponent += mateval[defense[i-1][0]]
+        else:
+            break
+    if (totalopponent > totalyou):
+        return True
+    return False
+    
 def blocks(grid, fromX, fromY, fromP, toX, toY, toS):
     if (fromP > 5 or fromP < -5 or (fromP < 3 and fromP > -3)):
         return []

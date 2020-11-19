@@ -3,7 +3,6 @@ class Player:
     def __init__(self, board, color, time):
         self.first = color == chess.WHITE
         pass
-    
     def move(self, board, time):
         if (self.first):
             self.first = False

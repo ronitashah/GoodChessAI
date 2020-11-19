@@ -1,12 +1,59 @@
 import chess
 from .F import *
 count = 0
-def minimax(gboard, depth):
+def minimax(gboard, depth, prevpos):
     global count
-    t = negascout2(gboard, depth, 1)[0][1]
-    return t
+    count = 0
+    moves = negascout2(gboard, depth, 1)
+    #print(count)
+    for (v, ans) in moves:
+        v *= -1
+        gboard.push(ans)
+        fen = gboard.board.fen()
+        gboard.pop()
+        if (fen in prevpos):
+            continue
+        if (v > -20):
+            return ans
+        return moves[0][1]
+    return moves[0][1]
+def quiescent(gboard, a, b, color):
+    global count
+    count += 1
+    #return color * gboard.heuristic
+    flags = None
+    attack = None
+    if (color == 1):
+        flags = gboard.Bflags.copy()
+        attack = gboard.Wattack
+    else:
+        flags = gboard.Wflags.copy()
+        attack = gboard.Battack
+    score = color * gboard.heuristic
+    if (a < score):
+        a = score
+        if (a >= b):
+            return score
+    for square in flags:
+        (p, s) = attack[square][0]
+        move = chess.Move(s, square)
+        if (((color == 1 and square // 8 == 7) or (color == -1 and square // 8 == 0)) and p == 1):
+            move.promotion = 5
+        if (not gboard.board.is_legal(move)):
+            continue
+        gboard.push(move)
+        v = -quiescent(gboard, -b, -a, -color)
+        gboard.pop()
+        if (score < v):
+            score = v
+            if (a < score):
+                a = score
+                if (a >= b):
+                    break
+    return score
 def negascout1(gboard, depth, a, b, color):
     v = 0
+    score = -float("inf")
     if (depth == 1):
         moves = list(gboard.board.legal_moves)
         if (len(moves) == 0):
@@ -16,15 +63,15 @@ def negascout1(gboard, depth, a, b, color):
                 return 0
         for move in moves:
             gboard.push(move)
-            global count
-            count += 1
-            v = color * gboard.heuristic
+            v = -quiescent(gboard, -b, -a, -color)
             gboard.pop()
-            if (a < v):
-                a = v
-                if (a >= b):
-                    break
-        return a
+            if (score < v):
+                score = v
+                if (a < score):
+                    a = score
+                    if (a >= b):
+                        break
+        return score
     moves = negascout2(gboard, depth // 2, color)
     if (len(moves) == 0):
         if (gboard.board.is_check()):
@@ -36,11 +83,13 @@ def negascout1(gboard, depth, a, b, color):
             gboard.push(move)
             v = -negascout1(gboard, 1, -b, -a, -color)
             gboard.pop()
-            if (a < v):
-                a = v
-                if (a >= b):
-                    break
-        return a
+            if (score < v):
+                score = v
+                if (a < score):
+                    a = score
+                    if (a >= b):
+                        break
+        return score
     for x in range(len(moves)):
         move = moves[x][1]
         gboard.push(move)
@@ -51,26 +100,28 @@ def negascout1(gboard, depth, a, b, color):
             if (a < v and v < b):
                 v = -negascout1(gboard, depth - 1, -b, -v, -color)
         gboard.pop()
-        if (a < v):
-            a = v
-            if (a >= b):
-                break
-    return a
+        if (score < v):
+            score = v
+            if (a < score):
+                a = score
+                if (a >= b):
+                    break
+    return score
 def negascout2(gboard, depth, color):
     ans = []
+    a = -float("inf")
+    b = float("inf")
     if (depth == 1):
         moves = list(gboard.board.legal_moves)
         for move in moves:
             gboard.push(move)
-            global count
-            count += 1
-            v = color * gboard.heuristic
+            v = -quiescent(gboard, -b, -a, -color)
+            if (a < v):
+                a = v
             gboard.pop()
             insert2(ans, (-v, move))
         return ans
     moves = negascout2(gboard, depth // 2, color)
-    a = -float("inf")
-    b = float("inf")
     v = 0
     for x in range(len(moves)):
         move = moves[x][1]
@@ -86,60 +137,3 @@ def negascout2(gboard, depth, color):
         if (a < v):
             a = v
     return ans
-def min(gboard, depth, a, b): #does the min part of minimax, and return the eval
-    depth -= 1
-    board = gboard.board
-    moves = list(board.legal_moves)
-    t = 0
-    if (len(moves) == 0):
-        if (board.is_check()):
-            return 1000000 + depth
-        else:
-            return 0
-    min = float("inf")
-    for move in moves:
-        gboard.push(move)
-        if (depth == 0):
-            global count
-            count += 1
-            t = gboard.heuristic
-        else:
-            t = max(gboard, depth, a, b)[0]
-        gboard.pop()
-        if (min > t):
-            min = t
-            if (b > min):
-                b = min
-                if (b <= a):
-                    break
-    
-    return min
-def max(gboard, depth, a, b): #does the max part of minimax, and returns a (eval, action) tuple
-    depth -= 1
-    board = gboard.board
-    moves = list(board.legal_moves)
-    if (len(moves) == 0):
-        if (board.is_check()):
-            return (-1000000 - depth, None)
-        else:
-            return (0, None)
-    max = -float("inf")
-    maxa = None
-    t = 0
-    for move in moves:
-        gboard.push(move)
-        if (depth == 0):
-            global count
-            count += 1
-            t = gboard.heuristic
-        else:
-            t = min(gboard, depth, a, b)
-        gboard.pop()
-        if (max < t):
-            max = t
-            maxa = move
-            if (a < max):
-                a = max
-                if (a >= b):
-                    break
-    return (max, maxa)

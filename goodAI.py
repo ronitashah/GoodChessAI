@@ -6,6 +6,7 @@ class Player:
     def __init__(self, board, side, time):
         self.gboard = GBoard(side)
         self.side = side
+        self.prevpos = set()
         if (side == chess.WHITE):
             self.first = True
         else:
@@ -20,12 +21,13 @@ class Player:
                 self.gboard.push(invert(board.peek()))
         move = None
         if (time > 5):
-            move = minimax(self.gboard, 4)
+            move = minimax(self.gboard, 4, self.prevpos)
         elif (time > 0.5):
-            move = minimax(self.gboard, 3)
+            move = minimax(self.gboard, 3, self.prevpos)
         else:
-            move = minimax(self.gboard, 2)
+            move = minimax(self.gboard, 2, self.prevpos)
         self.gboard.push(move)
+        self.prevpos.add(self.gboard.board.fen())
         if (self.side == chess.WHITE):
             return move
         return invert(move)

@@ -5,8 +5,16 @@ poseval = [[],
             [0, 0, 0, 0.5, 0.5, 0, 0, 0, -.5, 0, 0, 0, 0, 0, 0, -.5,-.5, 0, 0, 0, 0, 0, 0, -.5,-.5, 0, 0, 0, 0, 0, 0, -.5,-.5, 0, 0, 0, 0, 0, 0, -.5,-.5, 0, 0, 0, 0, 0, 0, -.5, .5, 1, 1, 1, 1, 1, 1, .5, 0, 0, 0, 0, 0, 0, 0, 0 ],
             [-2, -1, -1, -.5, -.5, -1, -1, -2, -1, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0, -1, -1, .5, .5, .5, .5, .5, 0.0, -1, 0, 0, 0.5, .5, .5, .5, 0.0, -.5, -.5, 0, .5, .5, .5, .5, 0, -.5, -1, 0, .5, .5, .5, .5, 0, -1, -1, 0, 0, 0, 0, 0, 0, -1, -2, -1, -1, -.5, -.5, -1, -1, -2],
             [2, 3, 1, 0, 0, 1, 3, 2, 2, 2, 0, 0, 0, 0, 2, 2, -1, -2, -2, -2, -2, -2, -2, -1,-2, -3, -3, -4, -4, -3, -3, -2, -3, -4, -4, -5, -5, -4, -4, -3,-3, -4, -4, -5, -5, -4, -4, -3,-3, -4, -4, -5, -5, -4, -4, -3,-3, -4, -4, -5, -5, -4, -4, -3]]
-mateval = [0, 10, 30, 30, 50, 90, 900]
+mateval = [0, 10, 30, 30, 50, 90, 200]
 doubleP = -1 #(n^2-n)/2 
 isolatedP = [-1, -0.5, 0]
 passedP = 5 #bonus for pawn being passed
 #protected constant next
+
+controlgrid = [1 for s in range(64)]
+enemycontrol = 1.2 #how much better it is to control a square with an enemy piece vs our own, * control
+protectedpow = -0.119 #its 1.3 times better to protect a pawn than a queen
+protectedcoef = 2.63 #how much better it is to protect a square with a piece than one without a piece (currently 2 times)
+protectorpow = -0.239
+iterationpow = -0.25 
+protectorcoef = 3.468
