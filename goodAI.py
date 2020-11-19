@@ -20,9 +20,11 @@ class Player:
             else:
                 self.gboard.push(invert(board.peek()))
         move = None
-        if (time > 5):
+        if (time > 10):
+            move = minimax(self.gboard, 5, self.prevpos)
+        elif (time > 4):
             move = minimax(self.gboard, 4, self.prevpos)
-        elif (time > 0.5):
+        elif (time > 1):
             move = minimax(self.gboard, 3, self.prevpos)
         else:
             move = minimax(self.gboard, 2, self.prevpos)

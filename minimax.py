@@ -1,11 +1,12 @@
 import chess
 from .F import *
+from .C import *
 count = 0
 def minimax(gboard, depth, prevpos):
     global count
     count = 0
+    prune1[depth] = float("inf")
     moves = negascout2(gboard, depth, 1)
-    #print(count)
     for (v, ans) in moves:
         v *= -1
         gboard.push(ans)
@@ -120,8 +121,11 @@ def negascout2(gboard, depth, color):
                 a = v
             gboard.pop()
             insert2(ans, (-v, move))
-        return ans
-    moves = negascout2(gboard, depth // 2, color)
+        if (color == 1):
+            return ans[:min(len(ans), prune1[1])]
+        else:
+            return ans[:min(len(ans), prune2[1])]
+    moves = negascout2(gboard, depth - 1, color)
     v = 0
     for x in range(len(moves)):
         move = moves[x][1]
@@ -136,4 +140,7 @@ def negascout2(gboard, depth, color):
         insert2(ans, (-v, move))
         if (a < v):
             a = v
-    return ans
+    if (color == 1):
+        return ans[:min(len(ans), prune1[depth])]
+    else:
+        return ans[:min(len(ans), prune2[depth])]
