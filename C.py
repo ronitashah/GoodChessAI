@@ -20,3 +20,5 @@ protectedcoef = 2.63 #how much better it is to protect a square with a piece tha
 protectorpow = -0.239
 iterationpow = -0.25 
 protectorcoef = 3.468
+
+passedpawncoef = 1.5

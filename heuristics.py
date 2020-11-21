@@ -88,24 +88,6 @@ def isolated(pawncol, col):
         ans += 1
     return ans
 
-def passed(pawncol, col, y, color):
-    ans = 0
-    if (color == 1):
-        if (len(pawncol[col]) > 0 and y < pawncol[col][len(pawncol[col]) - 1]):
-            ans += 1
-        if (col > 0 and ((len(pawncol[col - 1]) > 0 and y < pawncol[col - 1][len(pawncol[col])-1]))):
-            ans += 1
-        if (col < 7 and ((len(pawncol[col + 1]) > 0 and y < pawncol[col + 1][len(pawncol[col])-1]))):
-            ans += 1
-        return ans
-    if (len(pawncol[col]) > 0 and y > pawncol[col][0]):
-        ans += 1
-    if (col > 0 and ((len(pawncol[col - 1]) > 0 and y > pawncol[col - 1][0]))):
-        ans += 1
-    if (col < 7 and ((len(pawncol[col + 1]) > 0 and y > pawncol[col + 1][0]))):
-        ans += 1
-    return ans
-
 def wpassed(pawncol, col, y):
     ans = 0
     if (len(pawncol[col]) > 0 and y < pawncol[col][len(pawncol[col]) - 1]):
@@ -114,6 +96,8 @@ def wpassed(pawncol, col, y):
         ans += 1
     if (col < 7 and ((len(pawncol[col + 1]) > 0 and y < pawncol[col + 1][len(pawncol[col + 1])-1]))):
         ans += 1
+    if (ans == 3):
+        ans += y * passedpawncoef
     return ans
     
 def bpassed(pawncol, col, y):
@@ -124,5 +108,7 @@ def bpassed(pawncol, col, y):
         ans += 1
     if (col < 7 and ((len(pawncol[col + 1]) > 0 and y > pawncol[col + 1][0]))):
         ans += 1
+    if (ans == 3):
+        ans += (7 - y) * passedpawncoef
     return ans
         
