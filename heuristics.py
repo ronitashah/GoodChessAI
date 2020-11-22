@@ -46,38 +46,39 @@ def Pheuristic(self, square):
         if (col < 7):
             t = isolated(pawncol, col + 1)
             heuristicscore += isolatedP[t] - isolatedP[t - 1]
+    #passedpawn heuristic
     if (piece == 1):
         pawncol2 = self.Bpieces[1]
         if (wpassed(pawncol2, col, square // 8) == 0):
-            heuristicscore += passedP
+            heuristicscore += passedP + (square // 8 * passedpawncoef)
         if (collength == 1):
             for y in pawncol2[col]:
                 if (y > square // 8 and bpassed(pawncol, col, y) == 1):
-                    heuristicscore += passedP
+                    heuristicscore += passedP + (7 - (y)) * passedpawncoef
             if (col > 0):
                 for y in pawncol2[col - 1]:
                     if (y > square // 8 and bpassed(pawncol, col - 1, y) == 1):
-                        heuristicscore += passedP
+                        heuristicscore += passedP + (7 - (y)) * passedpawncoef
             if (col < 7):
                 for y in pawncol2[col + 1]:
                     if (y > square // 8 and bpassed(pawncol, col + 1, y) == 1):
-                        heuristicscore += passedP
+                        heuristicscore += passedP + (7 - (y)) * passedpawncoef
     if (piece == -1):
         pawncol2 = self.Wpieces[1]
         if (bpassed(pawncol2, col, square // 8) == 0):
-            heuristicscore += passedP
+            heuristicscore += passedP + (7 - (square // 8)) * passedpawncoef
         if (collength == 1):
             for y in pawncol2[col]:
                 if (y < square // 8 and wpassed(pawncol, col, y) == 1):
-                    heuristicscore += passedP
+                    heuristicscore += passedP + (y * passedpawncoef)
             if (col > 0):
                 for y in pawncol2[col - 1]:
                     if (y < square // 8 and wpassed(pawncol, col - 1, y) == 1):
-                        heuristicscore += passedP
+                        heuristicscore += passedP + (y * passedpawncoef)
             if (col < 7):
                 for y in pawncol2[col + 1]:
                     if (y < square // 8 and wpassed(pawncol, col + 1, y) == 1):
-                        heuristicscore += passedP
+                        heuristicscore += passedP + (y * passedpawncoef)
         
     return heuristicscore * piece #negative if black
 def isolated(pawncol, col):
@@ -96,8 +97,6 @@ def wpassed(pawncol, col, y):
         ans += 1
     if (col < 7 and ((len(pawncol[col + 1]) > 0 and y < pawncol[col + 1][len(pawncol[col + 1])-1]))):
         ans += 1
-    if (ans == 3):
-        ans += y * passedpawncoef
     return ans
     
 def bpassed(pawncol, col, y):
@@ -108,7 +107,5 @@ def bpassed(pawncol, col, y):
         ans += 1
     if (col < 7 and ((len(pawncol[col + 1]) > 0 and y > pawncol[col + 1][0]))):
         ans += 1
-    if (ans == 3):
-        ans += (7 - y) * passedpawncoef
     return ans
         

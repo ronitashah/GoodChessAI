@@ -10,7 +10,7 @@ poseval = [[],
 mateval = [0, 10, 30, 30, 50, 90, 200]
 doubleP = -1 #(n^2-n)/2 
 isolatedP = [-1, -0.5, 0]
-passedP = 5 #bonus for pawn being passed
+passedP = 3 #bonus for pawn being passed
 #protected constant next
 
 controlgrid = [1 for s in range(64)]
@@ -21,4 +21,4 @@ protectorpow = -0.239
 iterationpow = -0.25 
 protectorcoef = 3.468
 
-passedpawncoef = 1.5
+passedpawncoef = 1
