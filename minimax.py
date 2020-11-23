@@ -142,12 +142,7 @@ def negascout2(gboard, depth, a, b, color):
     v = None
     for (_, move) in moves:
         gboard.push(move)
-        if (v == None):
-            v = -negascout1(gboard, depth - 1, -b, -a, -color)
-        else:
-            v = -negascout1(gboard, depth - 1, -a - 0.01, -a, -color)
-            if (a < v and v < b):
-                v = -negascout1(gboard, depth - 1, -b, -v, -color)
+        v = -negascout1(gboard, depth - 1, -b, -a, -color)
         gboard.pop()
         insert2(ans, (-v, move))
         if (a < v):

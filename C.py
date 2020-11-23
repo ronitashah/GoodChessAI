@@ -1,7 +1,7 @@
 """important constants"""
 
-prune1 = [float("inf"), 32, 12, 4, 2, 2] #values for pruning your moves
-prune2 = [float("inf"), float("inf"), 32, 12, 4, 2] #values for pruning opponent's moves
+prune1 = [float("inf"), 32, 12, 4, 5, 3] #values for pruning your moves
+prune2 = [float("inf"), float("inf"), 24, 8, 4, 3] #values for pruning opponent's moves
 
 """heuristic constants below"""
 
