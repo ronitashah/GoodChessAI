@@ -146,7 +146,7 @@ def negascout2(gboard, depth, a, b, color):
             v = -negascout1(gboard, depth - 1, -b, -a, -color)
         else:
             v = -negascout1(gboard, depth - 1, -a - 0.01, -a, -color)
-            if (a < v and a < b):
+            if (a < v and and v < b and a < b):
                 v = -negascout1(gboard, depth - 1, -b, -v, -color)
         gboard.pop()
         insert2(ans, (-v, move))
