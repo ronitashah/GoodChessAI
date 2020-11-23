@@ -8,7 +8,7 @@ def minimax(gboard, depth, prevpos):
     """returns the best move at the current board state based on the current depth"""
     global count
     count = 0
-    moves = negascout2(gboard, depth - 1, -float("inf"), float("inf"), 1)
+    moves = negascout2(gboard, depth - 1, 1)
     moves = moves[:min(len(moves), prune1[depth - 1])]
     v = None
     a = -float("inf")
@@ -101,7 +101,7 @@ def negascout1(gboard, depth, a, b, color):
     if (depth == 2):
         for (_, move) in moves:
             gboard.push(move)
-            v = -negascout1(gboard, 1, -b, -a, -color)
+            v = -negascout1(gboard, 1, -color)
             gboard.pop()
             if (score < v):
                 score = v
