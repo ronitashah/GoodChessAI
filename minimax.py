@@ -88,7 +88,7 @@ def negascout1(gboard, depth, a, b, color):
                     if (a >= b):
                         break
         return score
-    moves = negascout2(gboard, depth - 1, a, b, color)
+    moves = negascout2(gboard, depth - 1, color)
     if (color == 1):
         moves = moves[:min(len(moves), prune1[depth - 1])]
     else:
@@ -101,7 +101,7 @@ def negascout1(gboard, depth, a, b, color):
     if (depth == 2):
         for (_, move) in moves:
             gboard.push(move)
-            v = -negascout1(gboard, 1, -color)
+            v = -negascout1(gboard, 1, -b, -a, -color)
             gboard.pop()
             if (score < v):
                 score = v
@@ -127,7 +127,7 @@ def negascout1(gboard, depth, a, b, color):
                 if (a >= b):
                     break
     return score
-def negascout2(gboard, depth, a, b, color):
+def negascout2(gboard, depth, color):
     """returns the possible moves from the node (gboard) given in sorted order based on the given depth"""
     ans = []
     a = -float("inf")
