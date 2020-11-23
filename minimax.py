@@ -130,19 +130,31 @@ def negascout1(gboard, depth, a, b, color):
 def negascout2(gboard, depth, a, b, color):
     """returns the possible moves from the node (gboard) given in sorted order based on the given depth"""
     ans = []
+    a = -float("inf")
+    b = float("inf")
     if (depth == 1):
-        moves = gboard.moves()
+        moves = list(gboard.board.legal_moves)
         for move in moves:
             gboard.push(move)
             v = -quiescent(gboard, -b, -a, -color)
             gboard.pop()
+            if (a < v):
+                a = v
             insert2(ans, (-v, move))
         return ans
-    moves = negascout2(gboard, depth - 1, a, b, color)
-    v = None
-    for (_, move) in moves:
+    moves = negascout2(gboard, depth - 1, color)
+    v = 0
+    for x in range(len(moves)):
+        move = moves[x][1]
         gboard.push(move)
-        v = -negascout1(gboard, depth - 1, -b, -a, -color)
+        if (x == 0):
+            v = -negascout1(gboard, depth - 1, -b, -a, -color)
+        else:
+            v = -negascout1(gboard, depth - 1, -a - 0.01, -a, -color)
+            if (a < v):
+                v = -negascout1(gboard, depth - 1, -b, -v, -color)
         gboard.pop()
         insert2(ans, (-v, move))
+        if (a < v):
+            a = v
     return ans
