@@ -1,8 +1,12 @@
+"""our own board class"""
+
 import chess
 from .F import *
 from .C import *
 class GBoard:
-    from .heuristics import matheuristic, controlheuristic, Pheuristic
+    """our own board class that has extra fields for heuristic calculations that are incrementally updated"""
+    
+    from .heuristics import matheuristic, Pheuristic
     def __init__(self, side):
         self.grid = [0 for s in range(64)]
         self.Wpieces = [[] for x in range(7)]
@@ -11,10 +15,11 @@ class GBoard:
         self.Bpieces[1] = [[] for x in range(8)]
         self.Wattack = [[] for s in range(64)]
         self.Battack = [[] for s in range(64)]
-        self.controlH = [0 for s in range(64)]
+        self.castle = 3
         self.heuristic = 0
         self.heuristicstack = [self.heuristic]
         self.movestack = []
+        self.castlestack = [self.castle]
         self.Wflags = set()
         self.Bflags = set()
         self.changed = set()
@@ -28,7 +33,12 @@ class GBoard:
                 self.board.set_piece_at(s, P)
                 self.addpiece(s, pieceof(P), False)
         self.board.turn = side 
-    def addpiece(self, square, piece, h): #function to be called when changing a square from empty to having a piece. updates all of the fields and heurisitc to have the piece added, but the board has the piece already added
+    def addpiece(self, square, piece, h):
+        """updates all the fields and heuristics to have the piece added, but the board has the piece already added
+        
+        should be called when changing a square from empty to having a piece
+        """
+
         grid = self.grid
         attack1 = None
         attack2 = None
@@ -162,6 +172,22 @@ class GBoard:
                 pi = abs(grid[sq])
                 if (tmax < pi):
                     tmax = pi
+    def moves(self):
+        board = self.board
+        castle = self.castle
+        ans = list(board.legal_moves)
+        x = 0
+        while (x < len(ans)):
+            if (board.is_castling(ans[x])):
+                if (board.turn):
+                    if ((castle & 1) == 0):
+                        del ans[x]
+                    return ans
+                if ((castle & 2) == 0):
+                    del ans[x]
+                return ans
+            x += 1
+        return ans
     def push(self, move): #makes the move and calls addpiece and rmpiece appriopriately to make the changes to all of the fields(other than obard which is updated seperately)
         grid = self.grid
         board = self.board
@@ -225,8 +251,6 @@ class GBoard:
         Bflags2 = set()
         Wattack = self.Wattack
         Battack = self.Battack
-        controlH = self.controlH
-        hdif = 0
         for square in Wflags1:
             p = grid[square]
             if (p > 0 and flag(Wattack[square], Battack[square], p)):
@@ -238,10 +262,6 @@ class GBoard:
         for square in self.changed:
             Wa = Wattack[square]
             Ba = Battack[square]
-            h = 0
-            #h = self.controlheuristic(control(Wa, Ba), square)
-            hdif += h - controlH[square]
-            controlH[square] = h
             p = grid[square]
             if (p > 0 and flag(Wa, Ba, p)):
                 Wflags2.add(square)
@@ -250,7 +270,14 @@ class GBoard:
         self.Wflags = Wflags2
         self.Bflags = Bflags2
         self.changed = set()
-        self.heuristic += hdif
+        castle = self.castle
+        if (piece == 6 and castle & 1 == 1):
+            castle -= 1
+            self.heuristic -= castleval
+        elif (piece == -6 and castle & 2 == 1):
+            castle -= 2
+            self.heuristic += castleval
+        self.castlestack.append(castle)
         self.heuristicstack.append(self.heuristic)
     def pop(self): #undoes the prev move and calls addpiece and rmpiece appriopriately to make the changes to all of the fields(other than obard which is updated seperately)
         grid = self.grid
@@ -301,21 +328,15 @@ class GBoard:
             if (P2 != None):
                 board.set_piece_at(toS, P2)
                 self.addpiece(toS, pieceof(P2), False)
+        castlestack = self.castlestack
+        castlestack.pop()
+        self.castle = castlestack[len(castlestack) - 1]
         hstack = self.heuristicstack
         hstack.pop()
         self.heuristic = hstack[len(hstack) - 1]
         return move
     def peek(self):
         return self.movestack[-1]
-def control(defense, attack):
-    ans = 0
-    for (i, x) in enumerate(defense, start=1):
-        ans += mateval[x[0]] ** protectorpow * i ** iterationpow
-
-    for (i, x) in enumerate(attack, start=1):
-        ans -= mateval[x[0]] ** protectorpow * i ** iterationpow
-
-    return protectorcoef * ans
 def flag(defense, attack, ptype): #returns if the piece is hanging or not
     if(len(attack) == 0):
         return False

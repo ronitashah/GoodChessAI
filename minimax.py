@@ -1,24 +1,39 @@
+"""minimax and quiescent se"""
+
 import chess
 from .F import *
 from .C import *
 count = 0
 def minimax(gboard, depth, prevpos):
+    """returns the best move at the current board state based on the current depth"""
     global count
     count = 0
-    prune1[depth] = float("inf")
-    moves = negascout2(gboard, depth, 1)
-    for (v, ans) in moves:
-        v *= -1
-        gboard.push(ans)
-        fen = gboard.board.fen()
+    moves = negascout2(gboard, depth - 1, -float("inf"), float("inf"), 1)
+    moves = moves[:min(len(moves), prune1[depth - 1])]
+    v = None
+    a = -float("inf")
+    b = float("inf")
+    ans = None
+    for (_, move) in moves:
+        gboard.push(move)
+        if (gboard.board.fen() in prevpos):
+            v = -20
+        elif (v == None):
+            v = -negascout1(gboard, depth - 1, -b, -a, -1)
+        else:
+            v = -negascout1(gboard, depth - 1, -a - 0.01, -a, -1)
+            if (a < v):
+                v = -negascout1(gboard, depth - 1, -b, -v, -1)
         gboard.pop()
-        if (fen in prevpos):
-            continue
-        if (v > -20):
-            return ans
-        return moves[0][1]
-    return moves[0][1]
+        if (a < v):
+            a = v
+            ans = move
+    print(count)
+    return ans
 def quiescent(gboard, a, b, color):
+    """returns the heuristic value of a node
+    
+    runs on states where our depth does not go deep enough to fully play out a trade"""
     global count
     count += 1
     #return color * gboard.heuristic
@@ -53,10 +68,10 @@ def quiescent(gboard, a, b, color):
                     break
     return score
 def negascout1(gboard, depth, a, b, color):
-    v = 0
+    """returns the value of the node based on the depth of the alpha-beta pruning"""
     score = -float("inf")
     if (depth == 1):
-        moves = list(gboard.board.legal_moves)
+        moves = gboard.moves()
         if (len(moves) == 0):
             if (gboard.board.is_check()):
                 return -1000000 - depth
@@ -73,7 +88,11 @@ def negascout1(gboard, depth, a, b, color):
                     if (a >= b):
                         break
         return score
-    moves = negascout2(gboard, depth // 2, color)
+    moves = negascout2(gboard, depth - 1, a, b, color)
+    if (color == 1):
+        moves = moves[:min(len(moves), prune1[depth - 1])]
+    else:
+        moves = moves[:min(len(moves), prune2[depth - 1])]
     if (len(moves) == 0):
         if (gboard.board.is_check()):
             return -1000000 - depth
@@ -91,10 +110,10 @@ def negascout1(gboard, depth, a, b, color):
                     if (a >= b):
                         break
         return score
-    for x in range(len(moves)):
-        move = moves[x][1]
+    v = None
+    for (_, move) in moves:
         gboard.push(move)
-        if (x == 0):
+        if (v == None):
             v = -negascout1(gboard, depth - 1, -b, -a, -color)
         else:
             v = -negascout1(gboard, depth - 1, -a - 0.01, -a, -color)
@@ -108,39 +127,29 @@ def negascout1(gboard, depth, a, b, color):
                 if (a >= b):
                     break
     return score
-def negascout2(gboard, depth, color):
+def negascout2(gboard, depth, a, b, color):
+    """returns the possible moves from the node (gboard) given in sorted order based on the given depth"""
     ans = []
-    a = -float("inf")
-    b = float("inf")
     if (depth == 1):
-        moves = list(gboard.board.legal_moves)
+        moves = gboard.moves()
         for move in moves:
             gboard.push(move)
             v = -quiescent(gboard, -b, -a, -color)
-            if (a < v):
-                a = v
             gboard.pop()
             insert2(ans, (-v, move))
-        if (color == 1):
-            return ans[:min(len(ans), prune1[1])]
-        else:
-            return ans[:min(len(ans), prune2[1])]
-    moves = negascout2(gboard, depth - 1, color)
-    v = 0
-    for x in range(len(moves)):
-        move = moves[x][1]
+        return ans
+    moves = negascout2(gboard, depth - 1, a, b, color)
+    v = None
+    for (_, move) in moves:
         gboard.push(move)
-        if (x == 0):
+        if (v == None):
             v = -negascout1(gboard, depth - 1, -b, -a, -color)
         else:
             v = -negascout1(gboard, depth - 1, -a - 0.01, -a, -color)
-            if (a < v):
+            if (a < v and a < b):
                 v = -negascout1(gboard, depth - 1, -b, -v, -color)
         gboard.pop()
         insert2(ans, (-v, move))
         if (a < v):
             a = v
-    if (color == 1):
-        return ans[:min(len(ans), prune1[depth])]
-    else:
-        return ans[:min(len(ans), prune2[depth])]
+    return ans
