@@ -31,9 +31,7 @@ class Player:
                 max = entry.weight
                 move = entry.move
         if (move == None):
-            if (time > 10): #basic time management 
-                move = minimax(self.gboard, 4, self.prevpos)
-            elif (time > 4):
+            if (time > 5): #basic time management 
                 move = minimax(self.gboard, 4, self.prevpos)
             elif (time > 1):
                 move = minimax(self.gboard, 3, self.prevpos)

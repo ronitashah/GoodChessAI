@@ -28,7 +28,6 @@ def minimax(gboard, depth, prevpos):
         if (a < v):
             a = v
             ans = move
-    #print(count)
     return ans
 def quiescent(gboard, a, b, color):
     """returns the heuristic value of a node
