@@ -1,4 +1,4 @@
-"""minimax and quiescent se"""
+"""minimax and quiescent search"""
 
 import chess
 from .F import *
@@ -28,7 +28,7 @@ def minimax(gboard, depth, prevpos):
         if (a < v):
             a = v
             ans = move
-    print(count)
+    #print(count)
     return ans
 def quiescent(gboard, a, b, color):
     """returns the heuristic value of a node
@@ -146,7 +146,7 @@ def negascout2(gboard, depth, a, b, color):
             v = -negascout1(gboard, depth - 1, -b, -a, -color)
         else:
             v = -negascout1(gboard, depth - 1, -a - 0.01, -a, -color)
-            if (a < v and and v < b and a < b):
+            if (a < v and v < b):
                 v = -negascout1(gboard, depth - 1, -b, -v, -color)
         gboard.pop()
         insert2(ans, (-v, move))

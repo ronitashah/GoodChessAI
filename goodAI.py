@@ -10,6 +10,7 @@ class Player:
         self.gboard = GBoard(side)
         self.side = side
         self.prevpos = set()
+        self.reader = chess.polyglot.open_reader("GoodChessAI/opening.bin")
         if (side == chess.WHITE):
             self.first = True
         else:
@@ -25,11 +26,10 @@ class Player:
                 self.gboard.push(invert(board.peek()))
         move = None
         max = -float("inf")
-        with chess.polyglot.open_reader("GoodChessAI/opening.bin") as reader:
-            for entry in reader.find_all(board):
-                if (max < entry.weight):
-                    max = entry.weight
-                    move = entry.move
+        for entry in self.reader.find_all(board):
+            if (max < entry.weight):
+                max = entry.weight
+                move = entry.move
         if (move == None):
             if (time > 10): #basic time management 
                 move = minimax(self.gboard, 4, self.prevpos)
