@@ -3,6 +3,7 @@
 from .minimax import minimax
 from .GBoard import GBoard
 from .F import *
+import random
 import chess
 import chess.polyglot
 import chess.syzygy
@@ -39,12 +40,19 @@ class Player:
                     max = t
                     move = m
         else:
+            ans = []
             for entry in self.opening.find_all(board): #opening book
                 if (max < entry.weight):
                     max = entry.weight
-                    move = entry.move
+                    ans = [entry.move]
+                elif (max == entry.weight):
+                    ans.append(entry.move)
+            if (len(ans) != 0):
+                move = random.choice(ans)
         if (move == None):
-            if (time > 5): #basic time management 
+            if (time > 20): #basic time management 
+                move = minimax(self.gboard, 5, self.prevpos)
+            elif (time > 5):
                 move = minimax(self.gboard, 4, self.prevpos)
             elif (time > 1):
                 move = minimax(self.gboard, 3, self.prevpos)
