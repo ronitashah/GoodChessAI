@@ -1,5 +1,5 @@
 # GoodChessAI
-ronit, nishant, and ryan's chess repo
+A depth 4 incremental heuristic chess AI with an opening book and an endgame table, framework is minimax negascout with a quiescence search built around alpha beta pruning
 
 requirements: python chess, a syzygy 3-4-5 endgame table folder, a game.py
 
