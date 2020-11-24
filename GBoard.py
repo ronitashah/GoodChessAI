@@ -5,7 +5,6 @@ from .F import *
 from .C import *
 class GBoard:
     """our own board class that has extra fields for heuristic calculations that are incrementally updated"""
-    
     from .heuristics import matheuristic, Pheuristic
     def __init__(self, side):
         self.grid = [0 for s in range(64)]
@@ -13,6 +12,7 @@ class GBoard:
         self.Bpieces = [[] for x in range(7)]
         self.Wpieces[1] = [[] for x in range(8)]
         self.Bpieces[1] = [[] for x in range(8)]
+        self.piececount = 0
         self.Wattack = [[] for s in range(64)]
         self.Battack = [[] for s in range(64)]
         self.castle = 3
@@ -38,7 +38,7 @@ class GBoard:
         
         should be called when changing a square from empty to having a piece
         """
-
+        self.piececount += 1
         grid = self.grid
         attack1 = None
         attack2 = None
@@ -103,7 +103,9 @@ class GBoard:
             if (piece == 1 or piece == -1):
                 pval += self.Pheuristic(square)
             self.heuristic += pval
-    def rmpiece(self, square, piece, h): #function to be called when changing a square from housing the piece "piece" into empty. updates all of the field and heuristicto have the piece removed, and the board doesn't have the piece removed
+    def rmpiece(self, square, piece, h): 
+        """function to be called when changing a square from housing the piece "piece" into empty. updates all of the field and heuristicto have the piece removed, and the board doesn't have the piece removed"""
+        self.piececount -= 1
         if (h):
             pval = self.matheuristic(square)
             if (piece == 1 or piece == -1):
@@ -188,7 +190,8 @@ class GBoard:
                 return ans
             x += 1
         return ans
-    def push(self, move): #makes the move and calls addpiece and rmpiece appriopriately to make the changes to all of the fields(other than obard which is updated seperately)
+    def push(self, move): 
+        """makes the move and calls addpiece and rmpiece appriopriately to make the changes to all of the fields(other than obard which is updated seperately)"""
         grid = self.grid
         board = self.board
         board.turn = not board.turn
@@ -279,7 +282,8 @@ class GBoard:
             self.heuristic += castleval
         self.castlestack.append(castle)
         self.heuristicstack.append(self.heuristic)
-    def pop(self): #undoes the prev move and calls addpiece and rmpiece appriopriately to make the changes to all of the fields(other than obard which is updated seperately)
+    def pop(self): 
+        """undoes the prev move and calls addpiece and rmpiece appriopriately to make the changes to all of the fields(other than obard which is updated seperately)"""
         grid = self.grid
         board = self.board
         board.turn = not board.turn
@@ -336,8 +340,10 @@ class GBoard:
         self.heuristic = hstack[len(hstack) - 1]
         return move
     def peek(self):
+        """isn't used, but is there because there's also a push and pop"""
         return self.movestack[-1]
-def flag(defense, attack, ptype): #returns if the piece is hanging or not
+def flag(defense, attack, ptype): 
+    """returns if the piece is hanging or not"""
     if(len(attack) == 0):
         return False
     i = 0
@@ -357,6 +363,7 @@ def flag(defense, attack, ptype): #returns if the piece is hanging or not
     return False
     
 def blocks(grid, fromX, fromY, fromP, toX, toY, toS):
+    """returns a list of squares that the from piece is clocked by the to piece"""
     if (fromP > 5 or fromP < -5 or (fromP < 3 and fromP > -3)):
         return []
     ans = []
@@ -444,6 +451,7 @@ def blocks(grid, fromX, fromY, fromP, toX, toY, toS):
             return ans + sync(grid, fromX, fromY, fromP, toX, toY, toS, p)
     return ans
 def sync(grid, fromX, fromY, fromP, toX, toY, toS, toP):
+    """returns a list of squares that the from piece can attack through the to piece"""
     if ((fromP > 0 and (toP < 0 or fromP < 3 or fromP > 5 or (toP != 1 and (toP < 3 or toP > 5)))) or (fromP < 0 and (toP > 0 or fromP > -3 or fromP < -5 or (toP != -1 and (toP > -3 or toP < -5))))):
         return []
     if (fromX == toX or fromY == toY):
