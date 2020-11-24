@@ -2,7 +2,10 @@
 ronit, nishant, and ryan's chess repo
 
 requirements: python chess, a syzygy 3-4-5 endgame table folder, a game.py
+
+
 Contributions:
+
 Nishant Korapati: initial code setup, mateval and poseval heuristic tables, flag heuristic, research
 
 Ronit Shah: gboard, goodai, minimax, alpha beta pruning, negascout, quiescence search, human, material and positional heuristic, 
