@@ -18,10 +18,12 @@ heuristic values, opening book, human player testing, research
 
 Links:
 
-https://chessprogramming.org
+https://chessprogramming.org/
 
 https://www.freecodecamp.org/news/simple-chess-ai-step-by-step-1d55a9266977/
 
 https://chessengines.blogspot.com/2018/05/chess-opening-book-ranomi-180315-bin.html
 
-https://python-chess.readthedocs.io/en/latest/syzygy.html
+https://chess.massimilianogoi.com/download/tablebases/Syzygy3-4-5/
+
+https://python-chess.readthedocs.io/
