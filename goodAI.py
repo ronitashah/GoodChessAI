@@ -50,7 +50,7 @@ class Player:
             if (len(ans) != 0):
                 move = random.choice(ans)
         if (move == None):
-            if (time > 20): #basic time management 
+            if (time > 60): #basic time management 
                 move = minimax(self.gboard, 5, self.prevpos)
             elif (time > 5):
                 move = minimax(self.gboard, 4, self.prevpos)
