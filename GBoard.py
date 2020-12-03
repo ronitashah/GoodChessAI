@@ -16,6 +16,7 @@ class GBoard:
         self.Wattack = [[] for s in range(64)]
         self.Battack = [[] for s in range(64)]
         self.castle = 3
+        self.queens = 3
         self.heuristic = 0
         self.heuristicstack = [self.heuristic]
         self.movestack = []
@@ -276,9 +277,9 @@ class GBoard:
         castle = self.castle
         if (piece == 6 and castle & 1 == 1):
             castle -= 1
-            self.heuristic -= castleval
+            #self.heuristic -= castleval
         elif (piece == -6 and castle & 2 == 1):
-            castle -= 2
+            #castle -= 2
             self.heuristic += castleval
         self.castlestack.append(castle)
         self.heuristicstack.append(self.heuristic)

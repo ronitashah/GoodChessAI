@@ -7,9 +7,16 @@ def matheuristic(self, square):
     #piece = number from -6 to 6, Piece = object.
     piece = self.grid[square]
     if (piece > 0): #if piece is white
-        return mateval[piece] + poseval[piece][square]
-    return -mateval[-piece] - poseval[-piece][(7 - square // 8) * 8 + square % 8]
+        h = mateval[piece]
+        if (piece == 6 and len(self.Wpieces[6]) + len(self.Bpieces[6]) == 0):
+            piece = 7
+        return h + poseval[piece][square]
+    h = mateval[piece]
+    if (piece == 6 and len(Wpieces[6]) + len(Bpieces[9]) == 0):
+        piece = -7
+    return -h - poseval[-piece][(7 - square // 8) * 8 + square % 8]
 def Pheuristic(self, square):
+    return 0
     """returns the heuristic score for the given square with a pawn"""
     heuristicscore = 0
     piece = self.grid[square]

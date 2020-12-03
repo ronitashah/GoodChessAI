@@ -12,7 +12,7 @@ class Player:
         self.gboard = GBoard(side)
         self.side = side
         self.prevpos = set()
-        self.opening = chess.polyglot.open_reader("nishant_ronit_ryan/opening.bin")
+        self.opening = chess.polyglot.open_reader("GoodChessAI/opening.bin")
         #self.endgame = chess.syzygy.open_tablebase(endgame)
         if (side == chess.WHITE):
             self.first = True
