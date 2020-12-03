@@ -13,7 +13,7 @@ class Player:
         self.side = side
         self.prevpos = set()
         self.opening = chess.polyglot.open_reader("nishant_ronit_ryan/opening.bin")
-        self.endgame = chess.syzygy.open_tablebase(endgame)
+        #self.endgame = chess.syzygy.open_tablebase(endgame)
         if (side == chess.WHITE):
             self.first = True
         else:
@@ -29,7 +29,7 @@ class Player:
                 self.gboard.push(invert(board.peek()))
         move = None
         max = -float("inf")
-        if (self.gboard.piececount <= 5): #endgame table
+        if (False and self.gboard.piececount <= 5): #endgame table
             for m in list(board.legal_moves):
                 board.push(m)
                 t = -self.endgame.probe_dtz(board)
@@ -49,10 +49,8 @@ class Player:
                     ans.append(entry.move)
             if (len(ans) != 0):
                 move = random.choice(ans)
-        if (move == None):
-            if (time > 60): #basic time management 
-                move = minimax(self.gboard, 5, self.prevpos)
-            elif (time > 5):
+        if (True or move == None):
+            if (time > 5):
                 move = minimax(self.gboard, 4, self.prevpos)
             elif (time > 1):
                 move = minimax(self.gboard, 3, self.prevpos)
